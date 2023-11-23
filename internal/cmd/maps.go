@@ -6,6 +6,8 @@ var COMMANDS_FUNCTION_MAP = map[string]interface{}{
 	INFO_LITERAL:   Info,
 	REM_LITERAL:    Rem,
 	REMOVE_LITERAL: Rem,
+	START_LITERAL:  Start,
+	STOP_LITERAL:   Stop,
 }
 
 var COMMANDS_USAGE_MAP = map[string]string{
@@ -14,4 +16,6 @@ var COMMANDS_USAGE_MAP = map[string]string{
 	INFO_LITERAL:   INFO_USAGE,
 	REM_LITERAL:    REM_USAGE,
 	REMOVE_LITERAL: REM_USAGE,
+	START_LITERAL:  START_USAGE,
+	STOP_LITERAL:   STOP_USAGE,
 }

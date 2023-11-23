@@ -23,6 +23,6 @@ func Add(args []string) int {
 		fmt.Printf("There was an error running: %v.\n", err)
 		return 2
 	}
-	fmt.Printf("Added device with name %s, address %s and port %d\n", name, address, port)
+	fmt.Printf("Added device with name %s, address %s:%d\n", name, address, port)
 	return 0
 }

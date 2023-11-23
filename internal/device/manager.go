@@ -5,13 +5,7 @@ import (
 	"math/rand"
 )
 
-type Device struct {
-	Name    string
-	Port    int
-	Address string
-}
-
-var deviceMap = map[string]Device{}
+var deviceMap = map[string]*Device{}
 var badPorts [70000]bool
 
 func Add(name, address string, port int) (bool, error) {
@@ -21,7 +15,7 @@ func Add(name, address string, port int) (bool, error) {
 	if _, ok := deviceMap[name]; ok {
 		return false, fmt.Errorf("device with this name already exist")
 	}
-	deviceMap[name] = Device{
+	deviceMap[name] = &Device{
 		Name:    name,
 		Address: address,
 		Port:    port,
@@ -34,6 +28,7 @@ func Remove(name string) error {
 	if _, ok := deviceMap[name]; !ok {
 		return fmt.Errorf("device with name %s does not exist", name)
 	}
+	deviceMap[name].Stop()
 	delete(deviceMap, name)
 	return nil
 }
@@ -43,10 +38,10 @@ func GetDeviceByName(name string) *Device {
 	if !ok {
 		return nil
 	}
-	return &d
+	return d
 }
 
-func GetAll() map[string]Device {
+func GetAll() map[string]*Device {
 	return deviceMap
 }
 
