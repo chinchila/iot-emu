@@ -1,0 +1,17 @@
+package cmd
+
+var COMMANDS_FUNCTION_MAP = map[string]interface{}{
+	EXIT_LITERAL:   Exit,
+	ADD_LITERAL:    Add,
+	INFO_LITERAL:   Info,
+	REM_LITERAL:    Rem,
+	REMOVE_LITERAL: Rem,
+}
+
+var COMMANDS_USAGE_MAP = map[string]string{
+	EXIT_LITERAL:   EXIT_USAGE,
+	ADD_LITERAL:    ADD_USAGE,
+	INFO_LITERAL:   INFO_USAGE,
+	REM_LITERAL:    REM_USAGE,
+	REMOVE_LITERAL: REM_USAGE,
+}
