@@ -4,44 +4,54 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
-
-	"github.com/chinchila/iot-emu/internal/routes"
 )
 
-const SERVER_ADDRESS_KEY = "server_address_key"
+type contextKey string
+
+const (
+	SERVER_DEVICE_CONTEXT_KEY contextKey = "serverDeviceContextKey"
+	SERVER_STATUS_LISTENING   string     = "open"
+	SERVER_STATUS_CLOSED      string     = "closed"
+)
 
 type Device struct {
-	Name    string
-	Port    int
-	Address string
-	Server  *http.Server
+	Name         string
+	Port         int
+	Address      string
+	ServerStatus string
+	Server       *http.Server
 }
 
 func (d *Device) Start() {
+	ctx := context.Background()
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", routes.Home)
-	// mux.HandleFunc("/hello", getHello)
+	mux.HandleFunc("/", RouteHome)
 	d.Server = &http.Server{
 		Addr:    d.FullAddress(),
 		Handler: mux,
+		BaseContext: func(l net.Listener) context.Context {
+			ctx = context.WithValue(ctx, SERVER_DEVICE_CONTEXT_KEY, d)
+			return ctx
+		},
 	}
 	go func() {
+		d.ServerStatus = SERVER_STATUS_LISTENING
 		err := d.Server.ListenAndServe()
 		if errors.Is(err, http.ErrServerClosed) {
-			fmt.Printf("server one closed\n")
+			d.ServerStatus = SERVER_STATUS_CLOSED
+			fmt.Printf("Stoped server %s with address %s\n", d.Name, d.FullAddress())
 		} else if err != nil {
-			fmt.Printf("error listening for server one: %s\n", err)
+			fmt.Printf("error listening on server %s: %s\n", d.Name, err)
 		}
 	}()
-	fmt.Println(d.Server)
 }
 
 func (d *Device) Stop() {
-	// ctx := context.Background()
-	fmt.Println(d.Server)
+	ctx := context.Background()
 	if d.Server != nil {
-		d.Server.Shutdown(context.TODO())
+		d.Server.Shutdown(ctx)
 	}
 }
 

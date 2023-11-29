@@ -16,9 +16,10 @@ func Add(name, address string, port int) (bool, error) {
 		return false, fmt.Errorf("device with this name already exist")
 	}
 	deviceMap[name] = &Device{
-		Name:    name,
-		Address: address,
-		Port:    port,
+		Name:         name,
+		Address:      address,
+		Port:         port,
+		ServerStatus: SERVER_STATUS_CLOSED,
 	}
 	badPorts[port] = true
 	return true, nil

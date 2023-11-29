@@ -23,6 +23,5 @@ func Stop(args []string) int {
 		return 2
 	}
 	dev.Stop()
-	fmt.Printf("Stoped server %s with address %s\n", dev.Name, dev.FullAddress())
 	return 0
 }
