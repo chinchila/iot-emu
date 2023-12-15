@@ -3,6 +3,8 @@ package device
 import (
 	"fmt"
 	"math/rand"
+
+	wothing "github.com/project-eria/go-wot/thing"
 )
 
 var deviceMap = map[string]*Device{}
@@ -20,6 +22,7 @@ func Add(name, address string, port int) (bool, error) {
 		Address:      address,
 		Port:         port,
 		ServerStatus: SERVER_STATUS_CLOSED,
+		Things:       make(map[string]*wothing.Thing),
 	}
 	badPorts[port] = true
 	return true, nil

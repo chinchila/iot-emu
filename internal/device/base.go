@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+
+	wothing "github.com/project-eria/go-wot/thing"
 )
 
 type contextKey string
@@ -14,6 +16,7 @@ const (
 	SERVER_DEVICE_CONTEXT_KEY contextKey = "serverDeviceContextKey"
 	SERVER_STATUS_LISTENING   string     = "open"
 	SERVER_STATUS_CLOSED      string     = "closed"
+	URN_FORMAT_STRING         string     = "urn:uuid:%s"
 )
 
 type Device struct {
@@ -21,6 +24,7 @@ type Device struct {
 	Port         int
 	Address      string
 	ServerStatus string
+	Things       map[string]*wothing.Thing
 	Server       *http.Server
 }
 
@@ -47,6 +51,32 @@ func (d *Device) Start() {
 		}
 	}()
 }
+
+func (d *Device) NewThing(title, version, description string) (*wothing.Thing, error) {
+	id := fmt.Sprintf("uuid:%d", len(d.Things))
+	thing, err := wothing.New(id, version, title, description, nil)
+	if err != nil {
+		return nil, err
+	}
+	d.Things[id] = thing
+	mux := d.Server.Handler.(*http.ServeMux)
+	routes := fmt.Sprintf("/%s/", thing.ID)
+	mux.HandleFunc(routes, RouteHomeThing)
+	return thing, nil
+}
+
+func (d *Device) GetThingById(id string) *wothing.Thing {
+	t, ok := d.Things[id]
+	if !ok {
+		return nil
+	}
+	return t
+}
+
+// func (d *Device) Detach(id string) {
+// 	id := fmt.Sprintf(URN_FORMAT_STRING, id)
+
+// }
 
 func (d *Device) Stop() {
 	ctx := context.Background()
